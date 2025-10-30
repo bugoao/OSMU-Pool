@@ -49,6 +49,7 @@ export class StratumV1Client {
 
     public extraNonceAndSessionId: string;
     public sessionStart: Date;
+    public noFee: boolean;
     public hashRate: number = 0;
 
     private buffer: string = '';
@@ -389,9 +390,23 @@ export class StratumV1Client {
 
     private async sendNewMiningJob(jobTemplate: IJobTemplate) {
 
-        const payoutInformation = [
-            { address: this.clientAuthorization.address, percent: 100 }
-        ];
+        let payoutInformation;
+        const devFeeAddress = this.configService.get('DEV_FEE_ADDRESS');
+        this.noFee = true;
+        if (this.entity) {
+            this.hashRate = this.statistics.hashRate;
+            this.noFee = this.hashRate != 0;
+        }
+        if (this.noFee || devFeeAddress == null || devFeeAddress.length < 1) {
+            payoutInformation = [
+                { address: this.clientAuthorization.address, percent: 100 }
+            ];
+
+        } else {
+            payoutInformation = [
+                { address: this.clientAuthorization.address, percent: 100 }
+            ];
+        }
 
         const networkConfig = this.configService.get('NETWORK');
         let network;
@@ -551,7 +566,7 @@ export class StratumV1Client {
                     address: this.clientAuthorization.address,
                     userAgent: this.clientSubscription.userAgent,
                     header: header.toString('hex'),
-                    externalPoolName: this.configService.get('POOL_IDENTIFIER') || 'Public-Pool'
+                    externalPoolName: this.configService.get('POOL_IDENTIFIER') || 'OSMU-Pool'
                 });
             }
 
