@@ -44,7 +44,7 @@ export class MiningJob {
 
         //    39th byte onwards: Optional data with no consensus meaning
         // Initial pool identifier
-        let poolIdentifier = configService.get('POOL_IDENTIFIER') || 'Public-Pool';
+        let poolIdentifier = configService.get('POOL_IDENTIFIER') || 'OSMU-Pool';
         let extra = Buffer.from(poolIdentifier);
 
         // Encode the block height
