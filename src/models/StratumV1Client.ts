@@ -49,7 +49,6 @@ export class StratumV1Client {
 
     public extraNonceAndSessionId: string;
     public sessionStart: Date;
-    public noFee: boolean;
     public hashRate: number = 0;
 
     private buffer: string = '';
@@ -390,23 +389,9 @@ export class StratumV1Client {
 
     private async sendNewMiningJob(jobTemplate: IJobTemplate) {
 
-        let payoutInformation;
-        const devFeeAddress = this.configService.get('DEV_FEE_ADDRESS');
-        this.noFee = true;
-        if (this.entity) {
-            this.hashRate = this.statistics.hashRate;
-            this.noFee = this.hashRate != 0;
-        }
-        if (this.noFee || devFeeAddress == null || devFeeAddress.length < 1) {
-            payoutInformation = [
-                { address: this.clientAuthorization.address, percent: 100 }
-            ];
-
-        } else {
-            payoutInformation = [
-                { address: this.clientAuthorization.address, percent: 100 }
-            ];
-        }
+        const payoutInformation = [
+            { address: this.clientAuthorization.address, percent: 100 }
+        ];
 
         const networkConfig = this.configService.get('NETWORK');
         let network;
@@ -537,6 +522,7 @@ export class StratumV1Client {
             }
             try {
                 await this.statistics.addShares(this.entity, this.sessionDifficulty);
+                this.hashRate = this.statistics.hashRate;
                 const now = new Date();
                 // only update every minute
                 if (this.entity.updatedAt == null || now.getTime() - this.entity.updatedAt.getTime() > 1000 * 60) {
