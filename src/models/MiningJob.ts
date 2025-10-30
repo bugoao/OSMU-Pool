@@ -44,7 +44,7 @@ export class MiningJob {
 
         //    39th byte onwards: Optional data with no consensus meaning
         // Initial pool identifier
-        let poolIdentifier = configService.get('POOL_IDENTIFIER') || 'Public-Pool';
+        let poolIdentifier = configService.get('POOL_IDENTIFIER') || 'OSMU-Pool';
         let extra = Buffer.from(poolIdentifier);
 
         // Encode the block height
@@ -55,7 +55,8 @@ export class MiningJob {
         const blockHeightLengthByte = Buffer.from([blockHeightEncoded.length]);
 
         // Generate padding and take length of encode blockHeight into account
-        const padding = Buffer.alloc(8 + (3 - blockHeightEncoded.length), 0)
+        // Reserve 12 bytes total: 4B (extraNonce1) + 8B (extraNonce2)
+        const padding = Buffer.alloc(12 + (3 - blockHeightEncoded.length), 0)
 
         // Build the script
         let script = Buffer.concat([blockHeightLengthByte, blockHeightEncoded, extra, padding]);
@@ -108,7 +109,8 @@ export class MiningJob {
         // set the nonces
         const nonceScript = testBlock.transactions[0].ins[0].script.toString('hex');
 
-        testBlock.transactions[0].ins[0].script = Buffer.from(`${nonceScript.substring(0, nonceScript.length - 16)}${extraNonce}${extraNonce2}`, 'hex');
+        // Replace the last 24 hex chars (12 bytes) with extraNonce1 (8 hex) + extraNonce2 (16 hex)
+        testBlock.transactions[0].ins[0].script = Buffer.from(`${nonceScript.substring(0, nonceScript.length - 24)}${extraNonce}${extraNonce2}`, 'hex');
 
         //recompute the root since we updated the coinbase script with the nonces
         testBlock.merkleRoot = this.calculateMerkleRootHash(testBlock.transactions[0].getHash(false), jobTemplate.merkle_branch);
@@ -224,6 +226,5 @@ export class MiningJob {
 
         return swappedBuffer;
     }
-
-
+    
 }
