@@ -2,7 +2,7 @@ import { ClientStatisticsService } from '../ORM/client-statistics/client-statist
 import { ClientEntity } from '../ORM/client/client.entity';
 
 const CACHE_SIZE = 30;
-const TARGET_SUBMISSION_PER_SECOND = 30;
+const TARGET_SUBMISSION_PER_SECOND = 60;
 const MIN_DIFF = 10000;
 export class StratumV1ClientStatistics {
 
