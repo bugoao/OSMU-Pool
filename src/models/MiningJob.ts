@@ -44,7 +44,7 @@ export class MiningJob {
 
         //    39th byte onwards: Optional data with no consensus meaning
         // Initial pool identifier
-        let poolIdentifier = configService.get('POOL_IDENTIFIER') || 'OSMU-Pool';
+        let poolIdentifier = configService.get('POOL_IDENTIFIER') || 'Public-Pool';
         let extra = Buffer.from(poolIdentifier);
 
         // Encode the block height
@@ -84,7 +84,8 @@ export class MiningJob {
 
         const partOneIndex = serializedCoinbaseTx.indexOf(inputScript) + inputScript.length;
 
-        this.coinbasePart1 = serializedCoinbaseTx.slice(0, partOneIndex - 16);
+        // Slice position updated to reserve 12 bytes (24 hex) for extranonce1+2
+        this.coinbasePart1 = serializedCoinbaseTx.slice(0, partOneIndex - 24);
         this.coinbasePart2 = serializedCoinbaseTx.slice(partOneIndex);
 
 
@@ -226,5 +227,6 @@ export class MiningJob {
 
         return swappedBuffer;
     }
-    
+
+
 }
