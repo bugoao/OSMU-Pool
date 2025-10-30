@@ -42,14 +42,13 @@ export class StratumV1Client {
     private statistics: StratumV1ClientStatistics;
     private stratumInitialized = false;
     private usedSuggestedDifficulty = false;
-    private sessionDifficulty: number = 16384;
+    private sessionDifficulty: number = 10000;
 
     private entity: ClientEntity;
     private creatingEntity: Promise<void>;
 
     public extraNonceAndSessionId: string;
     public sessionStart: Date;
-    public noFee: boolean;
     public hashRate: number = 0;
 
     private buffer: string = '';
@@ -390,25 +389,9 @@ export class StratumV1Client {
 
     private async sendNewMiningJob(jobTemplate: IJobTemplate) {
 
-        let payoutInformation;
-        const devFeeAddress = this.configService.get('DEV_FEE_ADDRESS');
-        //50Th/s
-        this.noFee = false;
-        if (this.entity) {
-            this.hashRate = this.statistics.hashRate;
-            this.noFee = this.hashRate != 0 && this.hashRate < 50000000000000;
-        }
-        if (this.noFee || devFeeAddress == null || devFeeAddress.length < 1) {
-            payoutInformation = [
-                { address: this.clientAuthorization.address, percent: 100 }
-            ];
-
-        } else {
-            payoutInformation = [
-                { address: devFeeAddress, percent: 1.5 },
-                { address: this.clientAuthorization.address, percent: 98.5 }
-            ];
-        }
+        const payoutInformation = [
+            { address: this.clientAuthorization.address, percent: 100 }
+        ];
 
         const networkConfig = this.configService.get('NETWORK');
         let network;
