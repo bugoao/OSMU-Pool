@@ -19,8 +19,10 @@ WORKDIR /build
 
 COPY . .
 
-# Build Public Pool using NPM
-RUN npm i && npm run build
+# 先安装缺失的依赖，再安装项目依赖并构建
+RUN npm install date-fns date-fns-tz \
+    && npm install \
+    && npm run build
 
 ############################
 # Docker final environment #
@@ -35,6 +37,5 @@ WORKDIR /public-pool
 
 # Copy built binaries into the final image
 COPY --from=build /build .
-#COPY .env.example .env
 
 CMD ["/usr/local/bin/node", "dist/main"]
