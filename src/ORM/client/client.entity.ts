@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import { DateTimeTransformer } from '../utils/DateTimeTransformer';
 import { TrackedEntity } from '../utils/TrackedEntity.entity';
 
 @Entity({ withoutRowid: true })
@@ -16,7 +17,7 @@ export class ClientEntity extends TrackedEntity {
     @Column({ length: 128, type: 'varchar', nullable: true })
     userAgent: string;
 
-    @Column({ type: 'datetime' })
+    @Column({ type: 'datetime', transformer: new DateTimeTransformer() })
     startTime: Date;
 
     @Column({ type: 'real', default: 0 })
