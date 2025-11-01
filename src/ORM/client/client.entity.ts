@@ -2,6 +2,7 @@ import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 import { DateTimeTransformer } from '../utils/DateTimeTransformer';
 import { TrackedEntity } from '../utils/TrackedEntity.entity';
 
+// https://www.sqlite.org/withoutrowid.html
 @Entity({ withoutRowid: true })
 @Index(['address', 'clientName', 'sessionId'], { unique: true })
 export class ClientEntity extends TrackedEntity {
@@ -17,12 +18,18 @@ export class ClientEntity extends TrackedEntity {
     @Column({ length: 128, type: 'varchar', nullable: true })
     userAgent: string;
 
-    @Column({ type: 'datetime', transformer: new DateTimeTransformer() })
+    @Column({ transformer: new DateTimeTransformer() })
     startTime: Date;
+
+    @Column({ transformer: new DateTimeTransformer(), nullable: true })
+    firstSeen: Date;
 
     @Column({ type: 'real', default: 0 })
     bestDifficulty: number;
 
     @Column({ default: 0 })
     hashRate: number;
+
+    @Column({ type: 'real', nullable: true })
+    currentDifficulty: number | null;
 }
