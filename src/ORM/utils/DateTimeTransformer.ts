@@ -1,13 +1,13 @@
 import { ValueTransformer } from 'typeorm';
 
 export class DateTimeTransformer implements ValueTransformer {
-    to(value: Date | null): string | null {
+    to(value: Date | null): Date | null {
 
-        return value ? value.toISOString() : null;
+        return value ?? null;
     }
 
-    from(value: string | null): Date | null {
+    from(value: Date | null): Date | null {
 
-        return value ? new Date(value) : null;
+        return value ?? null;
     }
 }
