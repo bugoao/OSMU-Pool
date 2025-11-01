@@ -1,12 +1,18 @@
 import { ValueTransformer } from 'typeorm';
-import { format } from 'date-fns-tz';
 
 export class DateTimeTransformer implements ValueTransformer {
-  to(value: Date | null): string | null {
-    return value ? format(value, 'yyyy-MM-dd HH:mm:ss', { timeZone: 'UTC' }) : null;
-  }
+    to(value: Date | string | null | undefined): string | null | undefined {
+        if (value === null || value === undefined) {
+            return value === undefined ? undefined : null;
+        }
+        const date = value instanceof Date ? value : new Date(value);
+        return date.toISOString();
+    }
 
-  from(value: string | null): Date | null {
-    return value ? new Date(value + 'Z') : null;
-  }
+    from(value: string | null | undefined): Date | null | undefined {
+        if (value === null || value === undefined) {
+            return value === undefined ? undefined : null;
+        }
+        return new Date(value);
+    }
 }
